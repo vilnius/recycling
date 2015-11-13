@@ -11,6 +11,15 @@ connection = pymysql.connect(user="ismesk",
                      charset='utf8',
                      cursorclass=pymysql.cursors.DictCursor)
 
+
+# Different colours for different markers
+MARKER_COLOR_MAP = dict(
+    a='#004358',    # blue
+    b='#BEDB39',    # green
+    e='#FFE11A',    # yellow
+    f='#FD7400',    # orange
+)
+
 markers = []
 
 try:
@@ -20,9 +29,14 @@ try:
         cursor.execute(sql)
 
         for row in cursor.fetchall():
+            properties = row
+            properties.update({
+                'marker-size': "small",
+                'marker-color': MARKER_COLOR_MAP[row['type']],
+            })
             marker = Feature(
                 geometry=Point((row['lng'], row['lat'])),
-                properties=row
+                properties=properties
             )
 
             markers.append(marker)
