@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" href="favicon.ico" type="image/x-icon"/>
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+	
+    <title>IŠMESK.LT - Ieškok reikiamų šiukšlių išmetimo vietų!</title>
+	
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	
+	<link rel="stylesheet" href="style.css" />
+	
+    <script src="http://maps.google.com/maps/api/js?sensor=false"
+            type="text/javascript"></script>
+	<script src="markerclusterer.min.js" type="text/javascript"></script>
+
+			
+			
+			
+    <script type="text/javascript">
+    //<![CDATA[
+	var markerGroups = [];
+	var map = null;
+	var gblIndex;
+	var lat;
+	var lng;
+	var infoWindow = new google.maps.InfoWindow;
+    var customIcons = {
+      a: {
+        icon: 'http://labs.google.com/ridefinder/images/mm_20_blue.png',
+        shadow: 'http://labs.google.com/ridefinder/images/mm_20_shadow.png'
+      },
+      b: {
+        icon: 'http://labs.google.com/ridefinder/images/mm_20_red.png',
+        shadow: 'http://labs.google.com/ridefinder/images/mm_20_shadow.png'
+      },
+	  c: {
+        icon: 'http://labs.google.com/ridefinder/images/mm_20_orange.png',
+        shadow: 'http://labs.google.com/ridefinder/images/mm_20_shadow.png'
+      },
+	  d: {
+        icon: 'http://labs.google.com/ridefinder/images/mm_20_green.png',
+        shadow: 'http://labs.google.com/ridefinder/images/mm_20_shadow.png'
+      },
+	  e: {
+        icon: 'http://labs.google.com/ridefinder/images/mm_20_yellow.png',
+        shadow: 'http://labs.google.com/ridefinder/images/mm_20_shadow.png'
+      },
+	  f: {
+        icon: 'http://labs.google.com/ridefinder/images/mm_20_yellow.png',
+        shadow: 'http://labs.google.com/ridefinder/images/mm_20_shadow.png'
+      },
+	  g: {
+        icon: 'http://labs.google.com/ridefinder/images/mm_20_yellow.png',
+        shadow: 'http://labs.google.com/ridefinder/images/mm_20_shadow.png'
+      }
+    };
+    function load() {
+	 
+	
+	
+      var map = new google.maps.Map(document.getElementById("map"), {
+        center: new google.maps.LatLng(54.67775153928507, 25.27379035949707),
+        zoom: 12,
+        mapTypeId: 'roadmap'
+      });
+	  
+	  if(navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = new google.maps.LatLng(position.coords.latitude,
+                                             position.coords.longitude);
+
+            var infowindow = new google.maps.InfoWindow({
+              map: map,
+              position: pos,
+              content: 'Location found using HTML5.'
+            });
+
+            map.setCenter(pos);
+          }, function() {});
+        }
+		
+		$.ajax('phpsqlajax_genxml.php')
+		.done(function(markers) {
+			for (var i = 0; i < markers.length; i++) {
+				var marker = markers[i];
+			
+			  //var name = markers[i].getAttribute("name");
+			  var index = marker.id;
+			  //var index = i + 1;
+			  var address = marker.address;
+			  var type = marker.type;
+			  var up = marker.up;
+			  var down = marker.down;
+			  var point = new google.maps.LatLng(
+				  parseFloat(marker.lat),
+				  parseFloat(marker.lng)
+				)
+			  var html = "<b>" + marker.name + "</b> <br/>" + address;
+			  var icon = customIcons[type] || {};
+			  var marker = new google.maps.Marker({
+				map: map,
+				position: point,
+				icon: icon.icon,
+				shadow: icon.shadow
+			  });
+			  console.log(i);
+			  marker.myup = up;
+			  marker.mydown = down;
+			  marker.mytype = type;
+			  marker.myname = name;
+			  marker.index = index;
+
+			  markerGroups.push(marker);
+			  bindInfoWindow(marker, map, infoWindow, html);
+			}
+			google.maps.event.addListener(map, "click", function (event) {
+					lat = event.latLng.lat();
+					lng = event.latLng.lng();
+				});
+			show("a");
+			show("b");
+			show("c");
+			show("d");
+			show("e");
+			var mcOptions = {gridSize: 50, maxZoom: 15};
+			var mc = new MarkerClusterer(map, markerGroups, mcOptions);
+		})
+		.fail(function() {
+			alert( "error" );
+		});
+    }
+	function toggleGroup(box,category) {
+	
+	  if (box.checked) {
+          show(category);
+        } else {
+          hide(category);
+        }
+	}	  
+	function show(category) {
+        for (var i=0; i<markerGroups.length; i++) {
+          if (markerGroups[i].mytype == category) {
+            markerGroups[i].setVisible(true);
+          }
+		  if (category == 'e' && (markerGroups[i].mytype == 'f') || ((markerGroups[i].mytype == 'g'))) {
+            markerGroups[i].setVisible(true);
+          }
+        }
+        // == check the checkbox ==
+        document.getElementById(category+"Checkbox").checked = true;
+      }
+
+      // == hides all markers of a particular category, and ensures the checkbox is cleared ==
+      function hide(category) {
+        for (var i=0; i<markerGroups.length; i++) {
+          if (markerGroups[i].mytype == category) {
+            markerGroups[i].setVisible(false); 
+			infoWindow.close();
+          }
+		  if (category == 'e' && (markerGroups[i].mytype == 'f') || ((markerGroups[i].mytype == 'g'))) {
+            markerGroups[i].setVisible(false);
+          }
+        }
+        // == clear the checkbox ==
+        document.getElementById(category+"Checkbox").checked = false;
+        // == close the info window, in case its open on a marker that we just hid
+      }
+    function bindInfoWindow(marker, map, infoWindow, html) {
+      google.maps.event.addListener(marker, 'click', function() {
+        infoWindow.setContent("<p><div class=\"updown\"><span class=\"up\">"+marker.myup+"</span><span class=\"down\">"+marker.mydown+"</span></div><i class=\"glyphicon glyphicon-thumbs-up\" style=\"color:green;font-size:24px\" onclick=\"myFunction("+marker.index+", 'up')\"></i><i class=\"glyphicon glyphicon-thumbs-down\" style=\"color:red;font-size:24px\" onclick=\"myFunction("+marker.index+", 'down')\"></i><div class=\pranestiprob\">Pranešti problemą: <i class=\"glyphicon glyphicon-bullhorn\" style=\"color:yellow;font-size:24px\" onclick=\"showReportDialog("+marker.index+")\" data-toggle=\"modal\" data-target=\"#myModal\"></i></div></p>");
+        infoWindow.open(map, marker);
+      });
+    }
+	function showReportDialog(markerIndex) {
+		gblIndex = markerIndex;
+	}
+	function myFunction(index, status) {
+	console.log(index);
+	console.log(status);
+	console.log('?rating='+status+'&page_id='+index);
+
+	/*downloadUrl("getip.php", function(data) {
+        var xml = data.responseXML;
+        var markers = xml.documentElement.getElementsByTagName("marker");
+		for (var i = 0; i < markers.length; i++) {
+			var vote_id = markers[i].getAttribute("vote_id");
+			var user_id = markers[i].getAttribute("user_id");
+			var post_id = markers[i].getAttribute("post_id");
+			var vote = markers[i].getAttribute("vote");
+		}
+		var real_ip = markers[i].getAttribute("real_ip");
+      });
+	  
+	  if (real_ip == vote_id)*/
+	
+	$.ajax({
+      url: 'rating.php',
+      type: 'get',
+      data: 'rating='+status+'&page_id='+index,
+      success: function(output) 
+      {
+          alert('Dėkojame, kad balsavote.');
+      }, error: function()
+      {
+          alert('Įvyko klaida.');
+      }
+   });
+	}
+	function sendaddReport() {
+
+
+	
+	$.ajax({
+      url: 'addemail.php',
+      type: 'get',
+      data: 'lat='+lat+'&lng='+lng,
+      success: function(output) 
+      {
+          alert('Sėkmingai išsiųstas prašymas pridėti naują konteinerį.');
+      }, error: function()
+      {
+          alert('Įvyko klaida.');
+      }
+   });
+	}
+    function downloadUrl(url, callback) {
+      var request = window.ActiveXObject ?
+          new ActiveXObject('Microsoft.XMLHTTP') :
+          new XMLHttpRequest;
+      request.onreadystatechange = function() {
+        if (request.readyState == 4) {
+          request.onreadystatechange = doNothing;
+          callback(request, request.status);
+        }
+      };
+      request.open('GET', url, true);
+      request.send(null);
+    }
+	
+	function sendReport() {
+		var complaintText = $('#complaintText').val();
+		var email = $('#emailText').val();
+		console.log(gblIndex);
+		
+		
+		
+		$('#myModal').modal('hide');
+		
+		$.get('zinutesPriemimas.php', 'zinute='+complaintText+'&email='+email+'&id='+gblIndex)
+		.success(function(){
+			alert('Pranešimas perduotas. Ačiu.');
+		})
+		.fail(function(){
+			alert('Atsiprašome. Klaida');
+		});
+		
+		
+	}
+	
+    function doNothing() {}
+ 
+    //]]>
+  </script>
+  </head>
+
+  <body onload="load()">
+  
+	<div class="header">
+		<div class="left">
+			<a href="#">
+				<img src="logo.png" alt="logo" />
+			</a>
+		</div>
+		
+		<div class="right checkbox">
+			<input type="checkbox" id="aCheckbox" onclick="toggleGroup(this,'a')" />
+			<label for="aCheckbox" id="aCheckbox">Buitinių Atliekų</label>
+			<input type="checkbox" id="bCheckbox" onclick="toggleGroup(this,'b')" />
+			<label for="bCheckbox" id="bCheckbox">Rūšiavimo</label>
+			<input type="checkbox" id="cCheckbox" onclick="toggleGroup(this,'c')" />
+			<label for="cCheckbox" id="cCheckbox">Statybos</label>
+			<input type="checkbox" id="dCheckbox" onclick="toggleGroup(this,'d')" />
+			<label for="dCheckbox" id="dCheckbox">Supirkimo</label>
+			<input type="checkbox" id="eCheckbox" onclick="toggleGroup(this,'e')" />
+			<label for="eCheckbox" id="eCheckbox">Kita</label>
+		</div>
+		
+		<div class="clear"></div>
+	</div>
+	<div id="map"></div>
+	<div class="content">
+		
+		
+		<!-- Modal -->
+		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		  <div class="modal-dialog" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Pranešk apie šio konteinerio problemą</h4>
+			  </div>
+			  <div class="modal-body">
+			  <input type="email" id="emailText" placeholder="Jūsų el. paštas" style="width: 100%; margin-bottom: 5px;">
+				<textarea id="complaintText" placeholder="Jūsų nusiskundimas" rows=10 style="width: 100%; max-width: 100%"></textarea>
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Atšaukti</button>
+				<button type="button" class="btn btn-primary" onclick="sendReport()">Pranešti</button>
+			  </div>
+			</div>
+		  </div>
+		</div>
+	</div>
+	
+	<div class="footer">
+			<div class="new">
+				<div class="left createnew">
+					Pridėkite naują šiukšliadėžę, jei jos nėra sistemoje arba pasiūlykite vietą naujai:
+				</div>
+				
+				<div class="left">					
+					<div class="left">
+						<button type="button" class="btn btn-primary" onclick="sendaddReport()">Siūlyti naują!</button>
+					</div>
+					
+					<div class="right">
+						<input type="text" id="latIn" placeholder="Pasirinkite tašką žemėlapyje (lat)" value="" /><br/>
+						<input type="text" id="lngIn" placeholder="Pasirinkite tašką žemėlapyje (lng)" value=""/>
+					</div>
+					
+					<div class="clear"></div>
+				</div>
+				
+				<div class="clear"></div>
+			</div>
+		
+		<div class="copyright">
+			Projekto pagrindas: atviri duomenys. Jei norite naudoti mūsų API, <a href="mailto:open@chimpdeck.com">parašykite</a>!
+		</div>
+	</div>
+  </body>
+</html>

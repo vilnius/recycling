@@ -1,0 +1,223 @@
+/* RESET CSS */
+
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+*/
+/* CUSTOM */
+
+a{
+color: #00897b;
+}
+
+div.clear{
+	clear: both;
+}
+
+div.header, div.footer{
+	max-width: 980px;
+	margin: 0 auto;
+	padding: 10px;
+}
+
+div.left{
+	float: left;
+	color: #677680;
+}
+
+div.right{
+	float: right;
+}
+
+div.left img{
+	width: 160px;
+}
+
+div#map{
+	width: 100%;
+	height: 80%;
+}
+
+html, body{
+	height: 100%;
+}
+
+div.header div.right input[type="checkbox"] {
+    display:none;
+}
+
+div.header div.right label {
+	display: inline-block;
+	cursor: pointer;
+	position: relative;
+	padding-left: 25px;
+	margin-right: 20px;
+	font-size: 13px;
+	padding-top:2px;
+}
+
+div.header div.right label:before {
+	content: "";
+	display: inline-block;
+
+	width: 16px;
+	height: 16px;
+
+	margin-right: 10px;
+	position: absolute;
+	left: 0;
+	bottom: 2px;
+	background-color: #aaa;
+	box-shadow: inset 0px 2px 3px 0px rgba(0, 0, 0, .3), 0px 1px 0px 0px rgba(255, 255, 255, .8);
+	border-radius: 3px;
+}
+
+div.header div.right label#aCheckbox:before{
+	background-color: #2980b9;
+}
+
+div.header div.right label#bCheckbox:before{
+	background-color: #c0392b;
+}
+
+div.header div.right label#cCheckbox:before{
+	background-color: #d35400;
+}
+
+div.header div.right label#dCheckbox:before{
+	background-color: #16a085;
+}
+
+div.header div.right label#eCheckbox:before{
+	background-color: #f39c12;
+}
+
+
+div.header div.right  input[type=checkbox]:checked + label:before {
+	content: "\2713";
+	text-shadow: 1px 1px 1px rgba(0, 0, 0, .2);
+	font-size: 15px;
+	color: #f3f3f3;
+	text-align: center;
+    line-height: 15px;
+}
+
+div.checkbox{
+	padding: 8px 0;
+}
+
+div.footer div.new div.right input{
+	margin: 2px;
+	margin-right: 5px;
+	width: 180px;
+	display: none;
+}
+
+div.footer div.new div.left button{
+	background: #888;
+	border: #007d70;
+	margin-left: 10px;
+}
+
+div.footer div.new div.left button:ative{
+	background: #00897b;
+	border: #007d70;
+}
+
+
+div.footer div.new .createnew{
+	margin: 5px 0;
+}
+
+div.copyright{
+	text-align: center;
+	margin-top: 10px;
+	opacity: 0.5;
+}
+
+/* MOBILE */
+
+/* Portrait */
+@media only screen 
+  and (min-device-width: 500px)
+  and (max-device-width: 960px){
+  div.header div.left{
+	width: 100%;
+	float: none;
+  }
+  
+  div.header div.left img{
+	display: block;
+	margin: 10px auto;
+  }
+  
+  div.header div.right{
+	margin: 0 auto;
+	float: none;
+	max-width: 450px;
+  }
+}
+
+@media only screen 
+  and (max-device-width: 499px){
+  div.header div.left{
+	width: 100%;
+	float: none;
+  }
+  
+  div.header div.left img{
+	display: block;
+	margin: 10px auto;
+  }
+  
+  div.header div.right{
+	margin: 0 auto;
+	float: none;
+	max-width: 140px;
+  }
+}
